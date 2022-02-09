@@ -3,6 +3,19 @@ import os
 
 # Generates random 3-word phrases, "-" delimited
 def createKey(__location__):
+    """
+    Creates guest key to set on WLANS
+
+    ### Returns
+    Randomly generated key
+    
+    ### Depends on
+    None
+
+    ### Parameters
+     - __location__: str
+       - Static location of main.py used for reliable file opening
+    """
     # Open file 'wordList.txt'
     file = open(os.path.join(__location__,'wordList.txt'), 'r')
     # Read file line by line
