@@ -1,6 +1,6 @@
 '''
 Set of functions that interface with the Ruckus SmartZone API
--------
+
 '''
 
 
@@ -18,9 +18,11 @@ urllib3.disable_warnings()
 def login(username, password, controller):
     """
     Login to Ruckus Virtual SmartZone and return service ticket
+    
+    ### Returns
+    API Service Ticket
 
-    Parameters
-    ----------
+    ### Parameters
     username: str
         Username to login to the controller with
     password: str
@@ -46,16 +48,17 @@ def getZones(serviceTicket, controller):
     """
     Get list of zones from the controller, returns JSON text
     
-    Depends on
-    ----------
+    ### Returns
+    List of Zones
+
+    ### Depends on
     login()
 
-    Parameters
-    ----------
-    serviceTicket: str
-        Service ticket retreived from login()
-    controller: str
-        IP Address of the controller to login to
+    ### Parameters
+     - serviceTicket: str
+       - Service ticket retreived from login()
+     - controller: str
+       - IP Address of the controller to login to
     """
     getZones = requests.get(
         'https://' + controller + ':8443/wsg/api/public/v10_0/rkszones?serviceTicket=' + serviceTicket,
@@ -72,6 +75,9 @@ def getZones(serviceTicket, controller):
 def getWlans(serviceTicket, controller, zones):
     """
     Get list of WLANS in each zone from the controller, returns JSON text
+
+    ### Returns
+    Dictionary of zoneID : wlanID : wlanName
     
     ### Depends on
     getZones()
@@ -97,7 +103,7 @@ def getWlans(serviceTicket, controller, zones):
     for zone in zoneList:
         # Retreives WLAN information from controller, stored in a variable
         gZWlans = requests.get(
-            'https://js-ruckus1.jsasd.org:8443/wsg/api/public/v10_0/rkszones/' + zone + '/wlans?serviceTicket=' + serviceTicket,
+            'https://' + controller + ':8443/wsg/api/public/v10_0/rkszones/' + zone + '/wlans?serviceTicket=' + serviceTicket,
             verify=False,
             params={
                 'serviceTicket':serviceTicket
@@ -117,3 +123,24 @@ def getWlans(serviceTicket, controller, zones):
                 wlanZonesID += 1
     
     return(wlanZones)
+
+def setGuestPass(serviceTicket, controller, wlans, guestKey):
+    """
+    Changes encryption passphrases for all WLANS that contain 'Guest'
+
+    ### Returns
+    None
+    
+    ### Depends on
+    getWlans()
+
+    ### Parameters
+     - serviceTicket: str
+       - Service ticket retreived from login()
+     - controller: str
+       - IP Address of the controller to login to
+     - wlans: str
+       - List of WLANS retreived from getWlans()
+     - guestKey: str
+       - Key to set for WLANS
+    """
