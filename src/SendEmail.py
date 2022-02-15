@@ -7,12 +7,14 @@ import os
 
 def sendEmail(__location__, key, username, password):
     """
-    Sends email to list of email addresses with guest key
+    Sends email to list of email addresses with guest key.
 
     ### Returns
     None
     
     ### Depends on
+     - emailList.txt
+       - Same directory as `main.py`
      - Ruckus.getWlans()
      - Ruckus.setGuestPass()
      - WordGen.createKey()

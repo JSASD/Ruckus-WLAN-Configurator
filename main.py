@@ -31,5 +31,8 @@ wlans = Ruckus.getWlans(serviceTicket, args['controller'], zones)
 print(str(wlans) + "\n\n")
 
 # Generate random 2-word phrase
-passphrase = WordGen.createKey(__location__)
-print(passphrase + "\n\n")
+psk = WordGen.createKey(__location__)
+print(psk + "\n\n")
+
+
+SendEmail.sendEmail(__location__, psk, args['emailUser'], args['emailPass'])
