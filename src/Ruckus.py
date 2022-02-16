@@ -144,3 +144,23 @@ def setGuestPass(serviceTicket, controller, wlans, guestKey):
      - guestKey: str
        - Key to set for WLANS
     """
+    requests.patch(
+        'https://' + controller + ":8443/v10_0/rkszones/" + wlans['zoneID'] + "/wlans/" + wlans['id'] + "?serviceTicket=" + serviceTicket,
+        verify=False,
+        params = {
+            'serviceTicket': serviceTicket
+        },
+        headers = {
+            'Content-Type':'application/json;charset=UTF-8'
+        },
+        json = {
+            "encryption": {
+                "method": "WPA2",
+                "algorithm": "AES",
+                "passphrase": guestKey,
+                "mfp": "disabled",
+                "support802.11rEnabled": False,
+            }
+
+        }
+    )
