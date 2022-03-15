@@ -72,7 +72,7 @@ def getZones(serviceTicket, controller):
     )
     return(getZones.text)
 
-def getWlans(serviceTicket, controller, zones):
+def getWlans(serviceTicket, controller, zones, searchText):
     """
     Get list of WLANS in each zone from the controller, returns JSON text
 
@@ -87,8 +87,10 @@ def getWlans(serviceTicket, controller, zones):
        - Service ticket retreived from login()
      - controller: str
        - IP Address of the controller to login to
-     - Zones: str
+     - zones: str
        - List of zones retreived from getZones()
+     - searchText: str
+       - String to search WLANs for, to return desired similar WLANs
     """
     zoneList = []
     zoneInfo = json.loads(zones)
@@ -118,7 +120,7 @@ def getWlans(serviceTicket, controller, zones):
 
         #Creates zoneID:wlanName dictionary
         for wlan in wlans:
-            if 'Guest' in wlan['name']:
+            if searchText in wlan['name']:
                 wlanZones[wlanZonesID] = {'zoneID': zone, 'wlanID': wlan['id'], 'wlanName': wlan['name']}
                 wlanZonesID += 1
     
@@ -126,7 +128,7 @@ def getWlans(serviceTicket, controller, zones):
 
 def setGuestPass(serviceTicket, controller, wlans, guestKey):
     """
-    Changes encryption passphrases for all WLANS that contain 'Guest'
+    Changes encryption passphrases for all WLANS that contain 'searchText' from arguments
 
     ### Returns
     None
@@ -144,23 +146,24 @@ def setGuestPass(serviceTicket, controller, wlans, guestKey):
      - guestKey: str
        - Key to set for WLANS
     """
-    requests.patch(
-        'https://' + controller + ":8443/v10_0/rkszones/" + wlans['zoneID'] + "/wlans/" + wlans['id'] + "?serviceTicket=" + serviceTicket,
-        verify=False,
-        params = {
-            'serviceTicket': serviceTicket
-        },
-        headers = {
-            'Content-Type':'application/json;charset=UTF-8'
-        },
-        json = {
-            "encryption": {
-                "method": "WPA2",
-                "algorithm": "AES",
-                "passphrase": guestKey,
-                "mfp": "disabled",
-                "support802.11rEnabled": False,
-            }
+    for wlan in wlans:
+        requests.patch(
+            'https://' + controller + ":8443/v10_0/rkszones/" + wlans['zoneID'] + "/wlans/" + wlans['id'] + "?serviceTicket=" + serviceTicket,
+            verify=False,
+            params = {
+                'serviceTicket': serviceTicket
+            },
+            headers = {
+                'Content-Type':'application/json;charset=UTF-8'
+            },
+            json = {
+                "encryption": {
+                    "method": "WPA2",
+                    "algorithm": "AES",
+                    "passphrase": guestKey,
+                    "mfp": "disabled",
+                    "support802.11rEnabled": False,
+                }
 
-        }
-    )
+            }
+        )

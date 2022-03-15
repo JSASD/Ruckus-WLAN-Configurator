@@ -27,7 +27,7 @@ serviceTicket = Ruckus.login(args['username'], args['password'], args['controlle
 zones = Ruckus.getZones(serviceTicket, args['controller'])
 print(zones + "\n\n")
 
-wlans = Ruckus.getWlans(serviceTicket, args['controller'], zones)
+wlans = Ruckus.getWlans(serviceTicket, args['controller'], zones, args['wlanSearch'])
 print(str(wlans) + "\n\n")
 
 # Generate random 2-word phrase
