@@ -10,6 +10,7 @@ def getArgs():
     controllerPrompt = "Set DNS name to log in to, best if use FQDN"
     emailUserPrompt = "Set email address to send an email from"
     emailPassPrompt = "Set password for emailUserPrompt"
+    wlanSearchPrompt = "String used to find WLANS (contains)"
 
     # Add arguments
     parser.add_argument("-u", "--Username", help = userPrompt, required=True)
@@ -17,6 +18,8 @@ def getArgs():
     parser.add_argument("-c", "--Controller", help = controllerPrompt, required=True)
     parser.add_argument("-e", "--EmailAddress", help = emailUserPrompt, required=True)
     parser.add_argument("-a", "--EmailPassword", help = emailPassPrompt, required=True)
+    parser.add_argument("-w", "--WlanSearch", help = wlanSearchPrompt, required=True)
+    parser.add_argument("-t", "--Type", help = typePrompt, required=False)
 
     # Read arguments from command line
     args = parser.parse_args()
@@ -27,7 +30,8 @@ def getArgs():
         'password': args.Password,
         'controller': args.Controller,
         'emailUser': args.EmailAddress,
-        'emailPass': args.EmailPassword
+        'emailPass': args.EmailPassword,
+        'wlanSearch': args.WlanSearch
     }
 
     return argValues
