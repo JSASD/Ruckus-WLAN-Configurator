@@ -19,7 +19,6 @@ def getArgs():
     parser.add_argument("-e", "--EmailAddress", help = emailUserPrompt, required=True)
     parser.add_argument("-a", "--EmailPassword", help = emailPassPrompt, required=True)
     parser.add_argument("-w", "--WlanSearch", help = wlanSearchPrompt, required=True)
-    parser.add_argument("-t", "--Type", help = typePrompt, required=False)
 
     # Read arguments from command line
     args = parser.parse_args()
