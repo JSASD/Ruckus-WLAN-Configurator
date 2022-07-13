@@ -4,6 +4,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
+# Import logging
+import logging
 
 def sendEmail(__location__, key, username, password):
     """
@@ -51,17 +53,19 @@ def sendEmail(__location__, key, username, password):
 
         # Body of message in HTML
         htmlText = """
-        <p>Hello!</p>
-        <p>&nbsp;</p>
+        <p>Hello WiFi-Goer!</p>
         <p>This email is to inform you that the latest guest pass for the Wi-Fi network&nbsp;<em><strong>JS-Guest</strong></em>&nbsp;has been generated.</p>
-        <p><span style="text-decoration: underline;"><em>The guest pass is:</em></span></p>
+        <p>&nbsp;</p>
+        <p><em>The guest pass is:</em></p>
         <h3><strong>""" + key + """</strong></h3>
+        <p>&nbsp;</p>
         <h4>Instructions to get connected:</h4>
         <ol>
         <li>Open Wi-Fi settings on your device</li>
         <li>Select the network&nbsp;<strong>JS-Guest&nbsp;</strong>and connect to it</li>
-        <li>Open any web browser and try to navigate to any website</li>
-        <li>You will be prompted for a password, please enter the current guest pass&nbsp;<strong>""" + key + """</strong></li>
+        <li>Enter the guest pass,&nbsp;<strong>""" + key + """</strong>,&nbsp;when prompted</li>
+        <li>Open any web browser and try to navigate to any website (such as <em>www.jsasd.org</em>)</li>
+        <li>You will be prompted to accept JSASD's guest wireless terms, click accept and continue to the internet!</li>
         </ol>
         <h4>Please keep the following in mind:</h4>
         <ul>
@@ -85,3 +89,5 @@ def sendEmail(__location__, key, username, password):
         mail.login(username, password)
         mail.sendmail(username, email, message.as_string())
         mail.quit()
+
+        logging.info("Notification email sent")
