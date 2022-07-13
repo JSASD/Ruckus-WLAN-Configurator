@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 def getArgs():
     # Initialize parser
@@ -42,4 +43,5 @@ def getArgs():
         'wlanSearch': args.WlanSearch
     }
 
+    logging.debug(argValues)
     return argValues
