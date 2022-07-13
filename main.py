@@ -22,12 +22,12 @@ print("\n\n")
 args = Args.getArgs()
 
 
-serviceTicket = Ruckus.login(args['username'], args['password'], args['controller'])
+serviceTicket = Ruckus.login(args['username'], args['password'], args['controller'], args['port'])
 
-zones = Ruckus.getZones(serviceTicket, args['controller'])
+zones = Ruckus.getZones(serviceTicket, args['controller'], args['port'])
 print(zones + "\n\n")
 
-wlans = Ruckus.getWlans(serviceTicket, args['controller'], zones, args['wlanSearch'])
+wlans = Ruckus.getWlans(serviceTicket, args['controller'], args['port'], zones, args['wlanSearch'])
 print(str(wlans) + "\n\n")
 
 # Generate random 2-word phrase

@@ -15,7 +15,7 @@ import urllib3
 urllib3.disable_warnings()
 
 
-def login(username, password, controller):
+def login(username, password, controller, port):
     """
     Login to Ruckus Virtual SmartZone and return service ticket
     
@@ -29,10 +29,12 @@ def login(username, password, controller):
         Password to login to the controller with
     controller: str
         IP Address of the controller to login to
+    port: str
+        Port to connect to the controller with
     """
     # Login to controller
     logon = requests.post(
-        'https://' + controller + ':8443/wsg/api/public/v10_0/serviceTicket',
+        'https://' + controller + ':' + port + '/wsg/api/public/v10_0/serviceTicket',
         verify=False,
         json = {
             "username": username,
@@ -44,7 +46,7 @@ def login(username, password, controller):
     serviceTicket = logonText['serviceTicket']
     return(serviceTicket)
 
-def getZones(serviceTicket, controller):
+def getZones(serviceTicket, controller, port):
     """
     Get list of zones from the controller, returns JSON text
     
@@ -59,9 +61,11 @@ def getZones(serviceTicket, controller):
        - Service ticket retreived from login()
      - controller: str
        - IP Address of the controller to login to
+     - port: str
+       - Port to connect to the controller with
     """
     getZones = requests.get(
-        'https://' + controller + ':8443/wsg/api/public/v10_0/rkszones?serviceTicket=' + serviceTicket,
+        'https://' + controller + ':' + port + '/wsg/api/public/v10_0/rkszones?serviceTicket=' + serviceTicket,
         verify=False,
         params = {
             'serviceTicket':serviceTicket
@@ -72,7 +76,7 @@ def getZones(serviceTicket, controller):
     )
     return(getZones.text)
 
-def getWlans(serviceTicket, controller, zones, searchText):
+def getWlans(serviceTicket, controller, port, zones, searchText):
     """
     Get list of WLANS in each zone from the controller, returns JSON text
 
@@ -87,6 +91,8 @@ def getWlans(serviceTicket, controller, zones, searchText):
        - Service ticket retreived from login()
      - controller: str
        - IP Address of the controller to login to
+     - port: str
+       - Port to connect to the controller with
      - zones: str
        - List of zones retreived from getZones()
      - searchText: str
@@ -105,7 +111,7 @@ def getWlans(serviceTicket, controller, zones, searchText):
     for zone in zoneList:
         # Retreives WLAN information from controller, stored in a variable
         gZWlans = requests.get(
-            'https://' + controller + ':8443/wsg/api/public/v10_0/rkszones/' + zone + '/wlans?serviceTicket=' + serviceTicket,
+            'https://' + controller + ':' + port + '/wsg/api/public/v10_0/rkszones/' + zone + '/wlans?serviceTicket=' + serviceTicket,
             verify=False,
             params={
                 'serviceTicket':serviceTicket
@@ -126,7 +132,7 @@ def getWlans(serviceTicket, controller, zones, searchText):
     
     return(wlanZones)
 
-def setGuestPass(serviceTicket, controller, wlans, guestKey):
+def setGuestPass(serviceTicket, controller, port, wlans, guestKey):
     """
     Changes encryption passphrases for all WLANS that contain 'searchText' from arguments
 
@@ -141,6 +147,8 @@ def setGuestPass(serviceTicket, controller, wlans, guestKey):
        - Service ticket retreived from login()
      - controller: str
        - IP Address of the controller to login to
+     - port: str
+       - Port to connect to the controller with
      - wlans: str
        - List of WLANS retreived from getWlans()
      - guestKey: str
@@ -148,7 +156,7 @@ def setGuestPass(serviceTicket, controller, wlans, guestKey):
     """
     for wlan in wlans:
         requests.patch(
-            'https://' + controller + ":8443/v10_0/rkszones/" + wlans['zoneID'] + "/wlans/" + wlans['id'] + "?serviceTicket=" + serviceTicket,
+            'https://' + controller + ':' + port + '/wsg/api/public/v10_0/rkszones/' + wlans['zoneID'] + '/wlans/' + wlans['id'] + '?serviceTicket=' + serviceTicket,
             verify=False,
             params = {
                 'serviceTicket': serviceTicket
