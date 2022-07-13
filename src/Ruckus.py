@@ -13,6 +13,10 @@ import json
 import urllib3
 # Suppress SSL warnings
 urllib3.disable_warnings()
+# Console logging
+import logging
+logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s',)
+
 
 
 def login(username, password, controller, port):
@@ -37,14 +41,40 @@ def login(username, password, controller, port):
         'https://' + controller + ':' + port + '/wsg/api/public/v10_0/serviceTicket',
         verify=False,
         json = {
-            "username": username,
-            "password": password
+            "username": str(username),
+            "password": str(password)
         }
     )
     # Get service ticket value from login and return it
     logonText = json.loads(logon.text)
+    logging.info("Logged in to " + controller)
+
     serviceTicket = logonText['serviceTicket']
+    logging.debug(serviceTicket)
     return(serviceTicket)
+
+def logout(serviceTicket, controller, port):
+    """
+    Logout of Ruckus Virtual SmartZone
+
+    ### Parameters
+     - serviceTicket: str
+       - Service ticket received from login
+    """
+    
+    # Logout from controller
+    requests.delete(
+        'https://' + controller + ':' + port + '/wsg/api/public/v10_0/serviceTicket',
+        verify=False,
+        params = {
+            'serviceTicket':serviceTicket
+        },
+        headers = {
+            'Content-Type':'application/json;charset=UTF-8'
+        }
+    )
+    logging.info("Logged out of " + controller)
+
 
 def getZones(serviceTicket, controller, port):
     """
@@ -74,6 +104,9 @@ def getZones(serviceTicket, controller, port):
             'Content-Type':'application/json;charset=UTF-8'
         }
     )
+    
+    logging.info("List of Zones retrieved")
+    logging.debug(getZones.text)
     return(getZones.text)
 
 def getWlans(serviceTicket, controller, port, zones, searchText):
@@ -130,6 +163,9 @@ def getWlans(serviceTicket, controller, port, zones, searchText):
                 wlanZones[wlanZonesID] = {'zoneID': zone, 'wlanID': wlan['id'], 'wlanName': wlan['name']}
                 wlanZonesID += 1
     
+    logging.info("List of WLANS retrieved")
+    logging.debug(wlanZones)
+
     return(wlanZones)
 
 def setGuestPass(serviceTicket, controller, port, wlans, guestKey):
@@ -156,11 +192,11 @@ def setGuestPass(serviceTicket, controller, port, wlans, guestKey):
     """
     for wlan in wlans:
         requests.patch(
-            'https://' + controller + ':' + port + '/wsg/api/public/v10_0/rkszones/' + wlans['zoneID'] + '/wlans/' + wlans['id'] + '?serviceTicket=' + serviceTicket,
+            'https://' + controller + ':' + port + '/wsg/api/public/v10_0/rkszones/' + wlans[wlan]['zoneID'] + '/wlans/' + wlans[wlan]['wlanID'] + '?serviceTicket=' + serviceTicket,
             verify=False,
-            params = {
-                'serviceTicket': serviceTicket
-            },
+            #params = {
+            #    'serviceTicket': serviceTicket
+            #},
             headers = {
                 'Content-Type':'application/json;charset=UTF-8'
             },
@@ -175,3 +211,5 @@ def setGuestPass(serviceTicket, controller, port, wlans, guestKey):
 
             }
         )
+    
+    logging.info("PSK updated with key of + " + guestKey)
