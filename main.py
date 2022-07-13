@@ -17,22 +17,30 @@ __location__ = os.path.realpath(
         )
 )
 
-print("\n\n")
+print('\n')
 
+# Get args from console
 args = Args.getArgs()
 
-
+# Log into controller
 serviceTicket = Ruckus.login(args['username'], args['password'], args['controller'], args['port'])
 
+# Get list of Zones
 zones = Ruckus.getZones(serviceTicket, args['controller'], args['port'])
-print(zones + "\n\n")
 
+# Get list of WLANS
 wlans = Ruckus.getWlans(serviceTicket, args['controller'], args['port'], zones, args['wlanSearch'])
-print(str(wlans) + "\n\n")
 
 # Generate random 2-word phrase
 psk = WordGen.createKey(__location__)
-print(psk + "\n\n")
 
+# Change PSK on guest WLANs
+Ruckus.setGuestPass(serviceTicket, args['controller'], args['port'], wlans, psk)
 
+# Send email to addresses in emailList.txt
 SendEmail.sendEmail(__location__, psk, args['emailUser'], args['emailPass'])
+
+# Log out of controller
+Ruckus.logout(serviceTicket, args['controller'], args['port'])
+
+print('\n')
