@@ -45,7 +45,7 @@ Run `main.py` with the following arguments:
    - Email address to send email from
  - `-a`, `--EmailPassword`, `str`
    - Password for send from email
- - `-w`, ``--WlanSearch`, `str`
+ - `-w`, `--WlanSearch`, `str`
    - String used to search for WLANS (contains)
 
 <br>
