@@ -15,7 +15,7 @@ import urllib3
 urllib3.disable_warnings()
 # Console logging
 import logging
-logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s',)
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s',)
 
 
 
@@ -201,12 +201,15 @@ def setGuestPass(serviceTicket, controller, port, wlans, guestKey):
                 'Content-Type':'application/json;charset=UTF-8'
             },
             json = {
+                "ssid": "JS-Guest",
+                "description": "Guest WiFi access",
                 "encryption": {
                     "method": "WPA2",
                     "algorithm": "AES",
                     "passphrase": guestKey,
                     "mfp": "disabled",
-                    "support802.11rEnabled": False,
+                    "support80211rEnabled": False,
+                    "mobilityDomainId": 3
                 }
 
             }
